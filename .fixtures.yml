@@ -1,0 +1,6 @@
+fixtures:
+  repositories:
+    apache: git://github.com/evenup/evenup-apache.git
+    ruby: git://github.com/evenup/evenup-ruby.git
+  symlinks:
+    thin: "#{source_dir}"

@@ -1,0 +1,15 @@
+--- 
+chdir: <%= scope.lookupvar('chdir') %>
+address: <%= scope.lookupvar('address') %>
+port: <%= scope.lookupvar('port') %>
+pid: <%= scope.lookupvar('pid') %>
+log: <%= scope.lookupvar('log') %>
+timeout: <%= scope.lookupvar('timeout') %>
+max_conns: <%= scope.lookupvar('max_conns') %>
+environment: <%= scope.lookupvar('environment') %>
+max_persistent_conns: <%= scope.lookupvar('max_persistent_conns') %>
+servers: <%= scope.lookupvar('servers') %>
+daemonize: <%= scope.lookupvar('daemonize') %>
+user: <%= scope.lookupvar('user') %>
+group: <%= scope.lookupvar('group') %>
+require: []

@@ -1,0 +1,122 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          thin
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      S 0 1 2 6
+# Short-Description: thin initscript
+# Description:       thin
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+#TODO - check if networking is up
+
+THIN_CONFDIR="/etc/thin"
+EXEC="/usr/bin/thin"
+prog="thin"
+
+function processAction {
+
+  local ACTION="${1}"
+  if [ "x${ACTION}" == "xstatus" ] ; then
+    ACTION="thin_status"
+  fi
+  local TARGET_SITES="${2}"
+
+  if [ "${TARGET_SITES}" ]; then
+    for SITE in ${TARGET_SITES} ; do
+      SITE_CONF="${THIN_CONFDIR}/${SITE}.yml"
+      eval ${ACTION} ${SITE_CONF}
+      RETVAL=$?
+    done
+  else
+    for SITE_CONF in ${THIN_CONFDIR}/* ; do 
+      eval ${ACTION} ${SITE_CONF}
+    done
+    RETVAL=0
+  fi
+}
+
+function thin_status {
+
+  local THIN_CONF="${1}"
+  local SITE=$(basename ${THIN_CONF})
+
+  # TODO - check each PID for number of servers
+  if [ -f "${THIN_CONF}" ] ; then
+    CFG_PORT=`grep port: ${THIN_CONF} | awk '{print $2}'`
+    CFG_PID_FILE=`grep pid: ${THIN_CONF} | awk '{print $2}'`
+    case ${CFG_PID_FILE} in 
+      /*)
+          PID_FILE="${CFG_PID_FILE}.${CFG_PORT}"
+          ;;
+      *)
+          CFG_CHDIR=`grep chdir: ${THIN_CONF} | awk '{print $2}'`
+          PID_FILE="${CFG_CHDIR}/${CFG_PID_FILE}.${CFG_PORT}"
+          ;;
+    esac
+    echo -n "${SITE}: "
+    status -p "${PID_FILE}" $prog
+    return $?
+  else
+    return 1
+  fi
+}
+
+function restart {
+
+  local THIN_CONF="${1}"
+  stop  ${THIN_CONF}
+  sleep 5
+  start ${THIN_CONF}
+}
+
+function start {
+    
+  local THIN_CONF="${1}"
+  local SITE=$(basename ${THIN_CONF})
+
+  if [ -f "${THIN_CONF}" ] ; then
+    echo "Starting thin service ( ${SITE} ):"
+    daemon ${EXEC} start -C ${THIN_CONF}
+    echo ""
+    return $?
+  else
+    return 1
+  fi
+}
+
+function stop {
+
+  local THIN_CONF="${1}"
+  local SITE=$(basename ${THIN_CONF})
+
+  if [ -f "${THIN_CONF}" ] ; then
+    echo "Stoppin thin service ( ${SITE} ):"
+    daemon ${EXEC} stop -C ${THIN_CONF}
+    echo ""
+    return $?
+  else
+    return 1
+  fi
+}
+
+if [ "$#" -lt "1" ]; then
+  echo "Usage: $0 {start|stop|restart|status} [site]" 
+  exit 1
+else
+  ACTION="$1"
+  TARGET_SITES=""
+fi
+
+if [ "$#" -gt "1" ]; then
+  shift 
+  TARGET_SITES="$*"
+fi
+
+processAction ${ACTION} "${TARGET_SITES}"
+
+exit $RETVAL
