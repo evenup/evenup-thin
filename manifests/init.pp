@@ -49,7 +49,7 @@ class thin {
     mode    => '0555',
     source  => 'puppet:///modules/thin/thin.init',
   }
-  
+
   user { 'thin':
     ensure  => 'present',
     system  => true,
