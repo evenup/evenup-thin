@@ -23,7 +23,7 @@
 # [*log*]
 #   String.  Full path to the logfile
 #   Default: /var/log/${name}/{$name}.log
-# 
+#
 # [*group*]
 #   String.  What group should the service be run as?
 #   Default: thin
