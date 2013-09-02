@@ -97,7 +97,7 @@ define thin::site (
 
   include thin
 
-  $logdir = inline_template("<%= File.dirname(scope.lookupvar('log') ) %>")
+  $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
 
   service { "thin-${name}":
     ensure    => running,
