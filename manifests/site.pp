@@ -101,7 +101,6 @@ define thin::site (
 
   service { "thin-${name}":
     ensure    => running,
-    #      enable    => manual,
     hasstatus => false,
     status    => "/etc/init.d/thin status ${name}",
     start     => "/etc/init.d/thin start ${name}",
