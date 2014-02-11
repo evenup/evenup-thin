@@ -92,20 +92,23 @@ define thin::site (
   $port                 = '3000',
   $servers              = '3',
   $timeout              = '15',
-  $user                 = 'thin'
+  $user                 = 'thin',
+  $manage_service       = true,
 ){
 
   include thin
 
   $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
 
-  service { "thin-${name}":
-    ensure    => running,
-    hasstatus => false,
-    status    => "/etc/init.d/thin status ${name}",
-    start     => "/etc/init.d/thin start ${name}",
-    stop      => "/etc/init.d/thin stop ${name}",
-    require   => File[$logdir];
+  if $manage_service {
+    service { "thin-${name}":
+      ensure    => running,
+      hasstatus => false,
+      status    => "/etc/init.d/thin status ${name}",
+      start     => "/etc/init.d/thin start ${name}",
+      stop      => "/etc/init.d/thin stop ${name}",
+      require   => File[$logdir];
+    }
   }
 
   file {
