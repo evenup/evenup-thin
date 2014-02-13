@@ -1,3 +1,4 @@
+  Fix notification when manage_service == false
 20140211 v0.2.0
   Allow management of service to be disabled
   Remove extra comment
