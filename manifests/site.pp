@@ -101,6 +101,8 @@ define thin::site (
   $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
 
   if $manage_service {
+    $notify = Service["think-${name}"]
+
     service { "thin-${name}":
       ensure    => running,
       hasstatus => false,
@@ -109,19 +111,21 @@ define thin::site (
       stop      => "/etc/init.d/thin stop ${name}",
       require   => File[$logdir];
     }
+  } else {
+      $notify = []
   }
 
-  file {
-    "/etc/thin/${name}.yml":
-      owner   => root,
-      group   => root,
-      content => template('thin/thin.yml'),
-      notify  => Service["thin-${name}"];
+  file { "/etc/thin/${name}.yml":
+    owner   => root,
+    group   => root,
+    content => template('thin/thin.yml'),
+    notify  => $notify,
+  }
 
-    $logdir:
-      ensure => directory,
-      owner  => $user,
-      group  => $group,
-      mode   => '0775';
+  file { $logdir:
+    ensure => directory,
+    owner  => $user,
+    group  => $group,
+    mode   => '0775',
   }
 }
