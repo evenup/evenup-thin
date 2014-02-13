@@ -1,5 +1,5 @@
 name 'evenup-thin'
-version '0.2.0'
+version '0.2.1'
 author 'Justin Lambert <jlambert@letsevenup.com>'
 license 'Apache'
 project_page 'https://github.com/evenup/evenup-thin'
