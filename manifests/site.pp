@@ -101,7 +101,7 @@ define thin::site (
   $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
 
   if $manage_service {
-    $notify = Service["think-${name}"]
+    $notify = Service["thin-${name}"]
 
     service { "thin-${name}":
       ensure    => running,
