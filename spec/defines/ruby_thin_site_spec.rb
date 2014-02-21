@@ -36,10 +36,12 @@ describe 'thin::site', :type => :define do
     it { should contain_file('/etc/thin/test_site.yml').with_content(/max_persistent_conns:\s12/) }
     it { should contain_file('/etc/thin/test_site.yml').with_content(/servers:\s1/) }
     it { should contain_file('/etc/thin/test_site.yml').with_content(/group:\sgroupname/) }
+    it { should contain_file('/etc/thin/test_site.yml').with(:notify => 'Service[thin-test_site]') }
   end
 
   context 'disabling service management' do
     let(:params) { { :chdir => '/var/somewhere', :manage_service => false } }
+    it { should contain_file('/etc/thin/test_site.yml').with(:notify => [] ) }
     it { should_not contain_service('thin-test_site') }
   end
 end
