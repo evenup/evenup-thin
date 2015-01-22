@@ -75,10 +75,6 @@
 # * Justin Lambert <mailto:jlambert@letsevenup.com>
 #
 #
-# === Copyright
-#
-# Copyright 2013 EvenUp.
-#
 define thin::site (
   $chdir,
   $address              = '0.0.0.0',
