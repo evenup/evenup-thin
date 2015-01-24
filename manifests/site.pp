@@ -99,14 +99,31 @@ define thin::site (
   if $manage_service {
     $thin_notify = Service["thin-${name}"]
 
+    case $::operatingsystemmajrelease {
+      '7': {
+        file { "/usr/lib/systemd/system/thin-${name}.service":
+          owner   => root,
+          group   => root,
+          mode    => '0555',
+          content => template('thin/thin-service.erb'),
+        }
+      }
+      default: {
+        file { "/etc/init.d/thin-${name}":
+          owner   => root,
+          group   => root,
+          mode    => '0555',
+          content => template('thin/thin-init.erb'),
+        }
+      }
+    }
+
     service { "thin-${name}":
+      enable    => true,
       ensure    => running,
-      hasstatus => false,
-      status    => "/etc/init.d/thin status ${name}",
-      start     => "/etc/init.d/thin start ${name}",
-      stop      => "/etc/init.d/thin stop ${name}",
       require   => File[$logdir];
     }
+
   } else {
       $thin_notify = []
   }

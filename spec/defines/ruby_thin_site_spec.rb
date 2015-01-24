@@ -2,11 +2,14 @@ require 'spec_helper'
 
 describe 'thin::site', :type => :define do
   let(:title) { 'test_site' }
+  let(:facts) { { :operatingsystemmajrelease => '6' } }
   let(:params) { { 'chdir' => '/var/somewhere' } }
 
-  it { should contain_file('/etc/thin/test_site.yml') }
-  it { should contain_service('thin-test_site') }
-  it { should contain_file('/var/log/test_site') }
+  context 'common' do
+    it { should contain_file('/etc/thin/test_site.yml') }
+    it { should contain_service('thin-test_site') }
+    it { should contain_file('/var/log/test_site') }
+  end
 
   context "when setting parameters" do
     let(:params) { {
@@ -37,6 +40,16 @@ describe 'thin::site', :type => :define do
     it { should contain_file('/etc/thin/test_site.yml').with_content(/servers:\s1/) }
     it { should contain_file('/etc/thin/test_site.yml').with_content(/group:\sgroupname/) }
     it { should contain_file('/etc/thin/test_site.yml').with(:notify => 'Service[thin-test_site]') }
+  end
+
+  context 'operatingsystemmajrelease == 6' do
+    let(:facts) { { :operatingsystemmajrelease => '6' } }
+    it { should contain_file('/etc/init.d/thin-test_site') }
+  end
+
+  context 'operatingsystemmajrelease == 7' do
+    let(:facts) { { :operatingsystemmajrelease => '7' } }
+    it { should contain_file('/usr/lib/systemd/system/thin-test_site.service') }
   end
 
   context 'disabling service management' do

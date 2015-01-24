@@ -18,29 +18,7 @@ THIN_CONFDIR="/etc/thin"
 EXEC="/usr/bin/thin"
 prog="thin"
 
-function processAction {
-
-  local ACTION="${1}"
-  if [ "x${ACTION}" == "xstatus" ] ; then
-    ACTION="thin_status"
-  fi
-  local TARGET_SITES="${2}"
-
-  if [ "${TARGET_SITES}" ]; then
-    for SITE in ${TARGET_SITES} ; do
-      SITE_CONF="${THIN_CONFDIR}/${SITE}.yml"
-      eval ${ACTION} ${SITE_CONF}
-      RETVAL=$?
-    done
-  else
-    for SITE_CONF in ${THIN_CONFDIR}/* ; do 
-      eval ${ACTION} ${SITE_CONF}
-    done
-    RETVAL=0
-  fi
-}
-
-function thin_status {
+function status {
 
   local THIN_CONF="${1}"
   local SITE=$(basename ${THIN_CONF})
@@ -49,7 +27,7 @@ function thin_status {
   if [ -f "${THIN_CONF}" ] ; then
     CFG_PORT=`grep port: ${THIN_CONF} | awk '{print $2}'`
     CFG_PID_FILE=`grep pid: ${THIN_CONF} | awk '{print $2}'`
-    case ${CFG_PID_FILE} in 
+    case ${CFG_PID_FILE} in
       /*)
           PID_FILE="${CFG_PID_FILE}.${CFG_PORT}"
           ;;
@@ -75,7 +53,7 @@ function restart {
 }
 
 function start {
-    
+
   local THIN_CONF="${1}"
   local SITE=$(basename ${THIN_CONF})
 
@@ -105,18 +83,10 @@ function stop {
 }
 
 if [ "$#" -lt "1" ]; then
-  echo "Usage: $0 {start|stop|restart|status} [site]" 
+  echo "Usage: $0 {start|stop|restart|status}"
   exit 1
 else
-  ACTION="$1"
-  TARGET_SITES=""
+  eval $1 ${THIN_CONFDIR}/<%= @name $>
 fi
-
-if [ "$#" -gt "1" ]; then
-  shift 
-  TARGET_SITES="$*"
-fi
-
-processAction ${ACTION} "${TARGET_SITES}"
 
 exit $RETVAL

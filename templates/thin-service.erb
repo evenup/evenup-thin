@@ -1,0 +1,12 @@
+[Unit]
+Description=A fast and very simple Ruby web server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/thin start -C /etc/thin/<%= @name %>.yml
+ExecReload=/usr/bin/thin restart -C /etc/thin/<%= @name %>.yml
+ExecStop=/usr/bin/thin stop -C /etc/thin/<%= @name %>.yml
+
+[Install]
+WantedBy=multi-user.target

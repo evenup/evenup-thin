@@ -57,13 +57,6 @@ class thin (
     force   => true,
   }
 
-  file { '/etc/init.d/thin':
-    owner  => root,
-    group  => root,
-    mode   => '0555',
-    source => 'puppet:///modules/thin/thin.init',
-  }
-
   user { 'thin':
     ensure  => 'present',
     system  => true,

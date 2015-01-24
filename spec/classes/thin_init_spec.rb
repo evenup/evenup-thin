@@ -5,7 +5,6 @@ describe 'thin', :type => :class do
   context 'default' do
     it { should contain_package('thin').with(:ensure => 'latest', :provider => 'gem') }
     it { should contain_service('thin') }
-    it { should contain_file('/etc/init.d/thin') }
     it { should contain_user('thin') }
     it { should contain_group('thin') }
   end
