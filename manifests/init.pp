@@ -40,13 +40,6 @@ class thin (
     provider => $package_provider,
   }
 
-  service { 'thin':
-    ensure    => running,
-    enable    => true,
-    hasstatus => true,
-    require   => Package[$package_name];
-  }
-
   file { '/etc/thin':
     ensure  => directory,
     owner   => root,
