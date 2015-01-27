@@ -3,6 +3,7 @@ require 'spec_helper'
 describe 'thin::site', :type => :define do
   let(:title) { 'test_site' }
   let(:facts) { { :operatingsystemmajrelease => '6' } }
+  let(:pre_condition) { 'class {"thin": }'}
   let(:params) { { 'chdir' => '/var/somewhere' } }
 
   context 'common' do

@@ -1,12 +1,13 @@
 [Unit]
-Description=A fast and very simple Ruby web server
-After=syslog.target network.target
+Description=Thin (<%= @name %>) service
+After=network.target
 
 [Service]
-Type=simple
-ExecStart=/usr/bin/thin start -C /etc/thin/<%= @name %>.yml
-ExecReload=/usr/bin/thin restart -C /etc/thin/<%= @name %>.yml
-ExecStop=/usr/bin/thin stop -C /etc/thin/<%= @name %>.yml
+Type=forking
+PIDFile=/var/run/lock/subsys/<%= @name %>.<%= @port %>
+ExecStart=/usr/bin/thin -C /etc/thin/<%= @name %>.yml start
+ExecReload=/usr/bin/thin -C /etc/thin/<%= @name %>.yml restart
+ExecStop=/usr/bin/thin -C /etc/thin/<%= @name %>.yml stop
 
 [Install]
 WantedBy=multi-user.target
