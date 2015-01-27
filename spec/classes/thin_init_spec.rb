@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe 'thin', :type => :class do
+  let(:facts) { { :operatingsystemmajrelease => '7' } }
 
   context 'default' do
     it { should contain_package('thin').with(:ensure => 'latest', :provider => 'gem') }

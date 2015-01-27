@@ -84,15 +84,17 @@ define thin::site (
   $group                = 'thin',
   $max_conns            = '1024',
   $max_persistent_conns = '512',
-  $pid                  = "/var/lock/subsys/${name}",
+  $pid                  = "${::thin::params::lockdir}/${name}",
   $port                 = '3000',
   $servers              = '3',
   $timeout              = '15',
   $user                 = 'thin',
   $manage_service       = true,
-){
+) {
 
-  include thin
+  if ! defined(Class['thin']) {
+    fail('You must include the thin base class before defining thin sites')
+  }
 
   $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
 
