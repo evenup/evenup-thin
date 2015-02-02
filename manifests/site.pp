@@ -108,6 +108,7 @@ define thin::site (
           group   => root,
           mode    => '0555',
           content => template('thin/thin-service.erb'),
+          notify  => Exec['systemctl-daemon-reload'],
         }
       }
       default: {
