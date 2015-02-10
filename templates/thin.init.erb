@@ -15,10 +15,32 @@
 #TODO - check if networking is up
 
 THIN_CONFDIR="/etc/thin"
-EXEC="/usr/bin/thin"
+EXEC="<%= @thin_bin %>"
 prog="thin"
 
-function status {
+function processAction {
+
+  local ACTION="${1}"
+  if [ "x${ACTION}" == "xstatus" ] ; then
+    ACTION="thin_status"
+  fi
+  local TARGET_SITES="${2}"
+
+  if [ "${TARGET_SITES}" ]; then
+    for SITE in ${TARGET_SITES} ; do
+      SITE_CONF="${THIN_CONFDIR}/${SITE}.yml"
+      eval ${ACTION} ${SITE_CONF}
+      RETVAL=$?
+    done
+  else
+    for SITE_CONF in ${THIN_CONFDIR}/* ; do
+      eval ${ACTION} ${SITE_CONF}
+    done
+    RETVAL=0
+  fi
+}
+
+function thin_status {
 
   local THIN_CONF="${1}"
   local SITE=$(basename ${THIN_CONF})
@@ -83,10 +105,18 @@ function stop {
 }
 
 if [ "$#" -lt "1" ]; then
-  echo "Usage: $0 {start|stop|restart|status}"
+  echo "Usage: $0 {start|stop|restart|status} [site]"
   exit 1
 else
-  eval $1 ${THIN_CONFDIR}/<%= @name $>
+  ACTION="$1"
+  TARGET_SITES=""
 fi
+
+if [ "$#" -gt "1" ]; then
+  shift
+  TARGET_SITES="$*"
+fi
+
+processAction ${ACTION} "${TARGET_SITES}"
 
 exit $RETVAL

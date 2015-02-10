@@ -96,39 +96,42 @@ define thin::site (
     fail('You must include the thin base class before defining thin sites')
   }
 
-  $logdir = inline_template('<%= File.dirname(scope.lookupvar(\'log\') ) %>')
+  Class['thin'] -> Thin::Site[$name]
+
+  $logdir = inline_template('<%= File.dirname(@log) %>')
 
   if $manage_service {
     $thin_notify = Service["thin-${name}"]
 
-    case $::operatingsystemmajrelease {
-      '7': {
-        file { "/usr/lib/systemd/system/thin-${name}.service":
-          owner   => root,
-          group   => root,
-          mode    => '0555',
-          content => template('thin/thin-service.erb'),
-          notify  => Exec['systemctl-daemon-reload'],
-        }
-      }
-      default: {
-        file { "/etc/init.d/thin-${name}":
-          owner   => root,
-          group   => root,
-          mode    => '0555',
-          content => template('thin/thin-init.erb'),
-        }
-      }
+    file { "/usr/lib/systemd/system/thin@${name}.service.d":
+      ensure  => 'directory',
     }
 
-    service { "thin-${name}":
-      enable    => true,
-      ensure    => running,
-      require   => File[$logdir];
+    file { "/usr/lib/systemd/system/thin@${name}.service.d/pidfile.conf":
+      ensure  => file,
+      owner   => root,
+      group   => root,
+      mode    => '0444',
+      content => "[Service]\nPIDFile=/var/run/lock/subsys/${name}.${port}\n",
     }
 
+    if $::thin::params::systemd {
+      service { "thin-${name}":
+        ensure  => running,
+        name    => "thin@${name}",
+        enable  => true,
+        require => File[$logdir],
+      }
+    } else {
+      service { "thin-${name}":
+        ensure  => running,
+        name    => "thin@${name}",
+        enable  => true,
+        require => File[$logdir],
+      }
+    }
   } else {
-      $thin_notify = []
+    $thin_notify = []
   }
 
   file { "/etc/thin/${name}.yml":
@@ -144,4 +147,5 @@ define thin::site (
     group  => $group,
     mode   => '0775',
   }
+
 }

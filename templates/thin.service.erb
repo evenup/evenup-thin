@@ -1,0 +1,13 @@
+[Unit]
+Description=Thin (%i) service
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/thin-%i
+Type=forking
+ExecStart=<%= @thin_bin %> -C /etc/thin/%i.yml start
+ExecReload=<%= @thin_bin %> -C /etc/thin/%i.yml restart
+ExecStop=<%= @thin_bin %> -C /etc/thin/%i.yml stop
+
+[Install]
+WantedBy=multi-user.target

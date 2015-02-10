@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe 'thin::site', :type => :define do
   let(:title) { 'test_site' }
-  let(:facts) { { :operatingsystemmajrelease => '6' } }
+  let(:facts) { { :osfamily => 'RedHat', :operatingsystemmajrelease => '6' } }
   let(:pre_condition) { 'class {"thin": }'}
   let(:params) { { 'chdir' => '/var/somewhere' } }
 
@@ -43,14 +43,9 @@ describe 'thin::site', :type => :define do
     it { should contain_file('/etc/thin/test_site.yml').with(:notify => 'Service[thin-test_site]') }
   end
 
-  context 'operatingsystemmajrelease == 6' do
-    let(:facts) { { :operatingsystemmajrelease => '6' } }
-    it { should contain_file('/etc/init.d/thin-test_site') }
-  end
-
   context 'operatingsystemmajrelease == 7' do
-    let(:facts) { { :operatingsystemmajrelease => '7' } }
-    it { should contain_file('/usr/lib/systemd/system/thin-test_site.service') }
+    let(:facts) { { :osfamily => 'RedHat', :operatingsystemmajrelease => '7', :path => '/tmp', :id => 0 } }
+    it { should contain_file('/usr/lib/systemd/system/thin@test_site.service.d/pidfile.conf') }
   end
 
   context 'disabling service management' do
