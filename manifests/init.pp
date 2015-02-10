@@ -30,10 +30,19 @@
 #
 #
 class thin (
-  $package_name     = $::thin::params::package_name,
-  $package_version  = $::thin::params::package_version,
-  $package_provider = $::thin::params::package_provider,
+  $package_name        = $::thin::params::package_name,
+  $package_version     = $::thin::params::package_version,
+  $package_provider    = $::thin::params::package_provider,
+  $additional_packages = $::thin::params::additional_packages,
+  $thin_bin            = $::thin::params::thin_bin,
 ) inherits thin::params {
+
+  if $additional_packages {
+    package { $additional_packages:
+      ensure => 'installed',
+      before => Package[$package_name],
+    }
+  }
 
   package { $package_name:
     ensure   => $package_version,
@@ -62,6 +71,25 @@ class thin (
   group { 'thin':
     ensure => 'present',
     system => true,
+  }
+
+  if $::thin::params::systemd {
+    include systemd
+
+    file { '/usr/lib/systemd/system/thin@.service':
+      owner   => root,
+      group   => root,
+      mode    => '0555',
+      content => template('thin/thin.service.erb'),
+      notify  => Exec['systemctl-daemon-reload'],
+    }
+  } else {
+    file { '/etc/init.d/thin':
+      owner   => root,
+      group   => root,
+      mode    => '0555',
+      content => template('thin/thin.init.erb'),
+    }
   }
 
 }

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'thin', :type => :class do
-  let(:facts) { { :operatingsystemmajrelease => '7' } }
+  let(:facts) { { :osfamily => 'RedHat', :operatingsystemmajrelease => '7', :path => '/tmp', :id => 0 } }
 
   context 'default' do
     it { should contain_package('thin').with(:ensure => 'latest', :provider => 'gem') }
