@@ -74,7 +74,7 @@ class thin (
   }
 
   if $::thin::params::systemd {
-    include systemd
+    include ::systemd
 
     file { '/usr/lib/systemd/system/thin@.service':
       owner   => root,
