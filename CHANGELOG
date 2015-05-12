@@ -1,3 +1,6 @@
+20150512 v1.0.0
+  Add systemd support
+  Rework module
 20140221 v0.2.3
   Fix notify variable overload
 20140214 v0.2.2
