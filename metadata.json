@@ -1,6 +1,6 @@
 {
   "name": "evenup-thin",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "author": "Justin Lambert <jlambert@letsevenup.com>",
   "license": "Apache-2.0",
   "summary": "Manages thin and related sites",
